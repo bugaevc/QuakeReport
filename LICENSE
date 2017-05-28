@@ -92,7 +92,7 @@ Apache License
       or a Contribution incorporated within the Work constitutes direct
       or contributory patent infringement, then any patent licenses
       granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
+      as of the timeInMilliseconds such litigation is filed.
 
    4. Redistribution. You may reproduce and distribute copies of the
       Work or Derivative Works thereof in any medium, with or without
@@ -580,7 +580,7 @@ Section 6 -- Term and Termination.
   b. Where Your right to use the Licensed Material has terminated under
      Section 6(a), it reinstates:
 
-       1. automatically as of the date the violation is cured, provided
+       1. automatically as of the timeInMilliseconds the violation is cured, provided
           it is cured within 30 days of Your discovery of the
           violation; or
 
