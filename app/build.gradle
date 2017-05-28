@@ -6,6 +6,10 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.example.android.quakereport"
         minSdkVersion 24
