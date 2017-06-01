@@ -124,7 +124,7 @@ class EarthquakeActivity : AppCompatActivity(),
 
     override fun onLoadFinished(loader: Loader<List<Earthquake>>, earthquakes: List<Earthquake>) {
         swipe_refresh.isRefreshing = false
-        adapter.setData(earthquakes)
+        adapter.data = earthquakes
         if (earthquakes.isEmpty()) {
             empty_view.setText(R.string.no_earthquakes)
             empty_view.visibility = View.VISIBLE
