@@ -30,6 +30,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_earthquake.*
+import java.net.URL
 
 class EarthquakeActivity : AppCompatActivity(),
         SharedPreferences.OnSharedPreferenceChangeListener,
@@ -93,7 +94,7 @@ class EarthquakeActivity : AppCompatActivity(),
 
         if (networkInfo == null || !networkInfo.isConnected) {
             swipe_refresh.isRefreshing = false
-            adapter.clear()
+            adapter.data = emptyList()
             empty_view.setText(R.string.no_internet_connection)
             empty_view.visibility = View.VISIBLE
             return null
@@ -118,8 +119,8 @@ class EarthquakeActivity : AppCompatActivity(),
                 .appendQueryParameter("limit", entryCount)
                 .appendQueryParameter("minmag", minMagnitude)
                 .appendQueryParameter("orderby", orderBy)
-                .toString()
-        return EarthquakeLoader(this, uri)
+                .build().toString()
+        return EarthquakeLoader(this, URL(uri))
     }
 
     override fun onLoadFinished(loader: Loader<List<Earthquake>>, earthquakes: List<Earthquake>) {
@@ -133,7 +134,9 @@ class EarthquakeActivity : AppCompatActivity(),
         }
     }
 
-    override fun onLoaderReset(loader: Loader<List<Earthquake>>) = adapter.clear()
+    override fun onLoaderReset(loader: Loader<List<Earthquake>>) {
+        adapter.data = emptyList()
+    }
 
     companion object {
         val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
