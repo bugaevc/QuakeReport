@@ -5,20 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable name="earthquake" type="com.example.android.quakereport.Earthquake"/>
-        <variable name="context" type="android.content.Context"/>
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-
-        tools:ignore="RtlHardcoded">
+        android:layout_height="72dp">
 
         <TextView
             android:id="@+id/magnitude"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginBottom="0dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="0dp"
             android:background="@drawable/magnitude_circle"
             android:gravity="center"
@@ -26,7 +23,7 @@
             android:textSize="16sp"
             android:text="@{earthquake.formatMagnitude()}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="8.9" />
 
@@ -44,8 +41,8 @@
             android:text="@{earthquake.getFancyLocation(context).offset}"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="30km S of"
-            app:layout_constraintLeft_toRightOf="@+id/magnitude"
-            android:layout_marginLeft="16dp" />
+            app:layout_constraintStart_toEndOf="@+id/magnitude"
+            android:layout_marginStart="16dp" />
 
         <TextView
             android:id="@+id/primary_location"
@@ -59,8 +56,8 @@
             tools:text="San Francisco, CA"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="16dp"
-            app:layout_constraintLeft_toRightOf="@+id/magnitude"
-            android:layout_marginLeft="16dp" />
+            app:layout_constraintStart_toEndOf="@+id/magnitude"
+            android:layout_marginStart="16dp" />
 
         <TextView
             android:id="@+id/date"
@@ -69,9 +66,9 @@
             android:textColor="@color/textColorEarthquakeDetails"
             android:textSize="12sp"
             tools:text="Mar 6, 2010"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:text="@{earthquake.date}"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/time"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
@@ -80,12 +77,12 @@
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:textColor="@color/textColorEarthquakeDetails"
             android:textSize="12sp"
             android:text="@{earthquake.time}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/date"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="15:00" />

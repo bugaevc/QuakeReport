@@ -10,24 +10,27 @@ import com.example.android.quakereport.databinding.EarthquakeListItemBinding
 class EarthquakeViewHolder(val binding: EarthquakeListItemBinding): RecyclerView.ViewHolder(binding.root) {
 
     var earthquake: Earthquake? = null
+        set(value) {
+            field = value
+            binding.earthquake = value
+            binding.executePendingBindings()
+
+            if (value == null) {
+                return
+            }
+
+            val magnitudeCircle = binding.magnitude.background as GradientDrawable
+            magnitudeCircle.setColor(getMagnitudeColor(value.magnitude))
+        }
 
     init {
         binding.root.setOnClickListener {
             earthquake?.apply {
                 val uri = Uri.parse(URL)
                 val intent = Intent(Intent.ACTION_VIEW, uri)
-                binding.context.startActivity(intent)
+                binding.root.context.startActivity(intent)
             }
         }
-    }
-
-    fun bind(earthquake: Earthquake) {
-        this.earthquake = earthquake
-        binding.earthquake = earthquake
-        binding.executePendingBindings()
-
-        val magnitudeCircle = binding.magnitude.background as GradientDrawable
-        magnitudeCircle.setColor(getMagnitudeColor(earthquake.magnitude))
     }
 
     fun getMagnitudeColor(magnitude: Double): Int {
@@ -43,6 +46,6 @@ class EarthquakeViewHolder(val binding: EarthquakeListItemBinding): RecyclerView
             9 -> R.color.magnitude9
             else -> R.color.magnitude10plus
         }
-        return ContextCompat.getColor(binding.context, res)
+        return ContextCompat.getColor(binding.root.context, res)
     }
 }

@@ -20,11 +20,12 @@ class EarthquakeAdapter: RecyclerView.Adapter<EarthquakeViewHolder>() {
         }
 
     override fun getItemCount() = data.size
-    override fun onBindViewHolder(holder: EarthquakeViewHolder, pos: Int) = holder.bind(data[pos])
+    override fun onBindViewHolder(holder: EarthquakeViewHolder, pos: Int) {
+        holder.earthquake = data[pos]
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EarthquakeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = EarthquakeListItemBinding.inflate(inflater, parent, false)
-        binding.context = parent.context
         return EarthquakeViewHolder(binding)
     }
 }
