@@ -15,7 +15,8 @@
  */
 package com.example.android.quakereport
 
-import android.arch.lifecycle.LifecycleActivity
+import android.arch.lifecycle.LifecycleRegistry
+import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -23,6 +24,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -30,8 +32,14 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_earthquake.*
 import java.net.URL
 
-class EarthquakeActivity : LifecycleActivity(),
+class EarthquakeActivity : AppCompatActivity(),
+        LifecycleRegistryOwner,
         SharedPreferences.OnSharedPreferenceChangeListener {
+
+    // we do not directly extend LifecycleActivity, because it extends
+    // FragmentActivity, not AppCompatActivity
+    val lifecycleRegistry = LifecycleRegistry(this)
+    override fun getLifecycle() = lifecycleRegistry
 
     val adapter = EarthquakeAdapter()
     lateinit var prefs: SharedPreferences
