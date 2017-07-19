@@ -29,7 +29,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import com.example.android.quakereport.databinding.ActivityEarthquakeBinding
+import com.example.android.quakereport.databinding.EarthquakeActivityBinding
 import java.net.URL
 
 class EarthquakeActivity : AppCompatActivity(),
@@ -38,17 +38,17 @@ class EarthquakeActivity : AppCompatActivity(),
 
     // we do not directly extend LifecycleActivity, because it extends
     // FragmentActivity, not AppCompatActivity
-    val lifecycleRegistry = LifecycleRegistry(this)
+    private val lifecycleRegistry = LifecycleRegistry(this)
     override fun getLifecycle() = lifecycleRegistry
 
-    lateinit var binding: ActivityEarthquakeBinding
-    lateinit var viewModel: EarthquakeViewModel
-    lateinit var prefs: SharedPreferences
-    val adapter = EarthquakeAdapter()
+    private lateinit var binding: EarthquakeActivityBinding
+    private lateinit var viewModel: EarthquakeViewModel
+    private lateinit var prefs: SharedPreferences
+    private val adapter = EarthquakeAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_earthquake)
+        binding = DataBindingUtil.setContentView(this, R.layout.earthquake_activity)
 
         binding.list.layoutManager = LinearLayoutManager(this)
         binding.list.adapter = adapter
@@ -140,6 +140,6 @@ class EarthquakeActivity : AppCompatActivity(),
     }
 
     companion object {
-        val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+        private val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
     }
 }

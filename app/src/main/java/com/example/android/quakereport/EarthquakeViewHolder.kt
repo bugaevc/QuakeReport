@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import com.example.android.quakereport.databinding.EarthquakeListItemBinding
 
-class EarthquakeViewHolder(val binding: EarthquakeListItemBinding): RecyclerView.ViewHolder(binding.root) {
+class EarthquakeViewHolder(private val binding: EarthquakeListItemBinding): RecyclerView.ViewHolder(binding.root) {
 
     var earthquake: Earthquake? = null
         set(value) {
@@ -33,7 +33,7 @@ class EarthquakeViewHolder(val binding: EarthquakeListItemBinding): RecyclerView
         }
     }
 
-    fun getMagnitudeColor(magnitude: Double): Int {
+    private fun getMagnitudeColor(magnitude: Double): Int {
         val res = when (magnitude.coerceAtLeast(1.0).toInt()) {
             1 -> R.color.magnitude1
             2 -> R.color.magnitude2

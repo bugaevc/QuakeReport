@@ -48,7 +48,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Some message" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

@@ -12,11 +12,9 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 
-private typealias Res = LoadStatus<List<Earthquake>>
-
 class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) {
-    private val data = MutableLiveData<Res>()
-    val earthquakes: LiveData<Res> = data
+    private val data = MutableLiveData<LoadStatus<List<Earthquake>>>()
+    val earthquakes: LiveData<LoadStatus<List<Earthquake>>> = data
 
     var url: URL? = null
         set(value) {
@@ -28,7 +26,7 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
         }
 
     companion object {
-        val client = OkHttpClient()
+        private val client = OkHttpClient()
     }
 
     fun forceReload() {
@@ -41,7 +39,7 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
         val networkInfo = connMgr.activeNetworkInfo
 
         if (networkInfo == null || !networkInfo.isConnected) {
-            data.value = LoadStatus.Failed(false)
+            data.value = LoadStatus.Failed(reloading = false)
             return
         }
 
@@ -54,6 +52,7 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
 
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object : Callback {
+            // this runs on a different thread, so we must use postValue()
             override fun onFailure(call: Call, e: IOException) = data.postValue(
                     LoadStatus.Failed(reloading = false)
             )

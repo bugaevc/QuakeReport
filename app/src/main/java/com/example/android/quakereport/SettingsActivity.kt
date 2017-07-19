@@ -1,17 +1,17 @@
 package com.example.android.quakereport
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
+import android.support.v7.app.AppCompatActivity
 
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        setContentView(R.layout.settings_activity)
     }
 
     class EarthquakePreferenceFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
@@ -19,12 +19,15 @@ class SettingsActivity : AppCompatActivity() {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.settings_main)
 
-            val minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key))
-            bindPreferenceSummaryToValue(minMagnitude)
-            val orderBy = findPreference(getString(R.string.settings_order_by_key))
-            bindPreferenceSummaryToValue(orderBy)
-            val entryCount = findPreference(getString(R.string.settings_entry_count_key))
-            bindPreferenceSummaryToValue(entryCount)
+            val allPrefs = listOf(
+                    R.string.settings_min_magnitude_key,
+                    R.string.settings_order_by_key,
+                    R.string.settings_entry_count_key
+            ).map { findPreference(getString(it)) }
+
+            for (p in allPrefs) {
+                bindPreferenceSummaryToValue(p)
+            }
         }
 
         private fun bindPreferenceSummaryToValue(preference: Preference) {
