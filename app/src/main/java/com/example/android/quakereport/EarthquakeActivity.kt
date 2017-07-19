@@ -15,16 +15,14 @@
  */
 package com.example.android.quakereport
 
-import android.app.LoaderManager
-import android.content.Context
+import android.arch.lifecycle.LifecycleActivity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.content.Loader
 import android.content.SharedPreferences
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -32,12 +30,12 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_earthquake.*
 import java.net.URL
 
-class EarthquakeActivity : AppCompatActivity(),
-        SharedPreferences.OnSharedPreferenceChangeListener,
-        LoaderManager.LoaderCallbacks<List<Earthquake>> {
+class EarthquakeActivity : LifecycleActivity(),
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     val adapter = EarthquakeAdapter()
     lateinit var prefs: SharedPreferences
+    lateinit var viewModel: EarthquakeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,19 +48,40 @@ class EarthquakeActivity : AppCompatActivity(),
         list.adapter = adapter
         list.setHasFixedSize(true)
 
-        reload(launching = true)
+        viewModel = ViewModelProviders.of(this).get(EarthquakeViewModel::class.java)
+        viewModel.url = buildURL()
+
+        viewModel.earthquakes.observe(this, Observer {
+            if (it == null) {
+                swipe_refresh.isRefreshing = true
+                adapter.data = emptyList()
+                empty_view.visibility = View.GONE
+                return@Observer
+            }
+
+            swipe_refresh.isRefreshing = it.reloading
+            when (it) {
+                is LoadStatus.Failed -> {
+                    swipe_refresh.isRefreshing = false
+                    adapter.data = emptyList()
+                    // TODO: what if it failed for another reason?
+                    empty_view.setText(R.string.no_internet_connection)
+                    empty_view.visibility = View.VISIBLE
+                }
+                is LoadStatus.Fine -> {
+                    adapter.data = it.res
+                    if (it.res.isEmpty()) {
+                        empty_view.setText(R.string.no_earthquakes)
+                        empty_view.visibility = View.VISIBLE
+                    } else {
+                        empty_view.visibility = View.GONE
+                    }
+                }
+            }
+        })
 
         swipe_refresh.setOnRefreshListener {
-            reload(launching = false)
-        }
-    }
-
-    private fun reload(launching: Boolean) {
-        empty_view.visibility = View.GONE
-        if (launching) {
-            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this)
-        } else {
-            loaderManager.restartLoader(EARTHQUAKE_LOADER_ID, null, this)
+            viewModel.forceReload()
         }
     }
 
@@ -85,23 +104,10 @@ class EarthquakeActivity : AppCompatActivity(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        reload(launching = false)
+        viewModel.url = buildURL()
     }
 
-    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<List<Earthquake>>? {
-        val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connMgr.activeNetworkInfo
-
-        if (networkInfo == null || !networkInfo.isConnected) {
-            swipe_refresh.isRefreshing = false
-            adapter.data = emptyList()
-            empty_view.setText(R.string.no_internet_connection)
-            empty_view.visibility = View.VISIBLE
-            return null
-        }
-
-        swipe_refresh.isRefreshing = true
-
+    private fun buildURL(): URL {
         val minMagnitude = prefs.getString(
                 getString(R.string.settings_min_magnitude_key),
                 getString(R.string.settings_min_magnitude_default)
@@ -120,27 +126,10 @@ class EarthquakeActivity : AppCompatActivity(),
                 .appendQueryParameter("minmag", minMagnitude)
                 .appendQueryParameter("orderby", orderBy)
                 .build().toString()
-        return EarthquakeLoader(this, URL(uri))
-    }
-
-    override fun onLoadFinished(loader: Loader<List<Earthquake>>, earthquakes: List<Earthquake>) {
-        swipe_refresh.isRefreshing = false
-        adapter.data = earthquakes
-        if (earthquakes.isEmpty()) {
-            empty_view.setText(R.string.no_earthquakes)
-            empty_view.visibility = View.VISIBLE
-        } else {
-            empty_view.visibility = View.GONE
-        }
-    }
-
-    override fun onLoaderReset(loader: Loader<List<Earthquake>>) {
-        adapter.data = emptyList()
+        return URL(uri)
     }
 
     companion object {
         val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-        val LOG_TAG = EarthquakeActivity::class.java.name
-        val EARTHQUAKE_LOADER_ID = 1
     }
 }

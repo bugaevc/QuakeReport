@@ -43,6 +43,8 @@ dependencies {
 
     kapt "com.android.databinding:compiler:2.3.3"
 
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+
     testCompile 'junit:junit:4.12'
 }
 repositories {
