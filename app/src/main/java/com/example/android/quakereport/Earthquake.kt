@@ -5,7 +5,12 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class Earthquake(var magnitude: Double, var location: String, var timeInMilliseconds: Long, var URL: String) {
+data class Earthquake(
+        var magnitude: Double,
+        var location: String,
+        var timeInMilliseconds: Long,
+        var URL: String
+) {
 
     private fun formatDate(date: Date) = SimpleDateFormat.getDateInstance().format(date)
     private fun formatTime(date: Date) = SimpleDateFormat.getTimeInstance().format(date)

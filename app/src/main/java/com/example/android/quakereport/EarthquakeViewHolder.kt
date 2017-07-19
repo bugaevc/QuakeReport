@@ -27,27 +27,22 @@ class EarthquakeViewHolder(val binding: EarthquakeListItemBinding): RecyclerView
         binding.executePendingBindings()
 
         val magnitudeCircle = binding.magnitude.background as GradientDrawable
-        // can't use the property here
         magnitudeCircle.setColor(getMagnitudeColor(earthquake.magnitude))
     }
 
     fun getMagnitudeColor(magnitude: Double): Int {
-        val colors = intArrayOf(
-                R.color.magnitude1,
-                R.color.magnitude2,
-                R.color.magnitude3,
-                R.color.magnitude4,
-                R.color.magnitude5,
-                R.color.magnitude6,
-                R.color.magnitude7,
-                R.color.magnitude8,
-                R.color.magnitude9,
-                R.color.magnitude10plus
-        )
-        var res = magnitude.toInt()
-        res = Math.min(res, 10)
-        res = Math.max(res, 1)
-        res = colors[res - 1]
+        val res = when (magnitude.coerceAtLeast(1.0).toInt()) {
+            1 -> R.color.magnitude1
+            2 -> R.color.magnitude2
+            3 -> R.color.magnitude3
+            4 -> R.color.magnitude4
+            5 -> R.color.magnitude5
+            6 -> R.color.magnitude6
+            7 -> R.color.magnitude7
+            8 -> R.color.magnitude8
+            9 -> R.color.magnitude9
+            else -> R.color.magnitude10plus
+        }
         return ContextCompat.getColor(binding.context, res)
     }
 }
