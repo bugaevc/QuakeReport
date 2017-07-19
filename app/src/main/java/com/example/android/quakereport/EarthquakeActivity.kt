@@ -21,6 +21,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.SharedPreferences
+import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -28,8 +29,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import kotlinx.android.synthetic.main.activity_earthquake.*
+import com.example.android.quakereport.databinding.ActivityEarthquakeBinding
 import java.net.URL
 
 class EarthquakeActivity : AppCompatActivity(),
@@ -41,54 +41,56 @@ class EarthquakeActivity : AppCompatActivity(),
     val lifecycleRegistry = LifecycleRegistry(this)
     override fun getLifecycle() = lifecycleRegistry
 
-    val adapter = EarthquakeAdapter()
-    lateinit var prefs: SharedPreferences
+    lateinit var binding: ActivityEarthquakeBinding
     lateinit var viewModel: EarthquakeViewModel
+    lateinit var prefs: SharedPreferences
+    val adapter = EarthquakeAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_earthquake)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_earthquake)
 
+        binding.list.layoutManager = LinearLayoutManager(this)
+        binding.list.adapter = adapter
+        binding.list.setHasFixedSize(true)
+
+        // prefs need to be initialized before calling buildURL()
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.registerOnSharedPreferenceChangeListener(this)
 
-        list.layoutManager = LinearLayoutManager(this)
-        list.adapter = adapter
-        list.setHasFixedSize(true)
-
         viewModel = ViewModelProviders.of(this).get(EarthquakeViewModel::class.java)
-        viewModel.url = buildURL()
+        if (viewModel.url == null) {
+            viewModel.url = buildURL()
+        }
 
         viewModel.earthquakes.observe(this, Observer {
             if (it == null) {
-                swipe_refresh.isRefreshing = true
+                binding.message = ""
+                binding.swipeRefresh.isRefreshing = true
                 adapter.data = emptyList()
-                empty_view.visibility = View.GONE
                 return@Observer
             }
 
-            swipe_refresh.isRefreshing = it.reloading
+            binding.swipeRefresh.isRefreshing = it.reloading
             when (it) {
                 is LoadStatus.Failed -> {
-                    swipe_refresh.isRefreshing = false
-                    adapter.data = emptyList()
                     // TODO: what if it failed for another reason?
-                    empty_view.setText(R.string.no_internet_connection)
-                    empty_view.visibility = View.VISIBLE
+                    binding.message = getString(R.string.no_internet_connection)
+                    binding.swipeRefresh.isRefreshing = false
+                    adapter.data = emptyList()
                 }
                 is LoadStatus.Fine -> {
                     adapter.data = it.res
                     if (it.res.isEmpty()) {
-                        empty_view.setText(R.string.no_earthquakes)
-                        empty_view.visibility = View.VISIBLE
+                        binding.message = getString(R.string.no_earthquakes)
                     } else {
-                        empty_view.visibility = View.GONE
+                        binding.message = null
                     }
                 }
             }
         })
 
-        swipe_refresh.setOnRefreshListener {
+        binding.swipeRefresh.setOnRefreshListener {
             viewModel.forceReload()
         }
     }
