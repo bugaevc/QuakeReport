@@ -14,12 +14,15 @@ import java.net.URL
 
 private typealias Res = LoadStatus<List<Earthquake>>
 
-class EarthquakeViewModel(val app: Application) : AndroidViewModel(app) {
+class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) {
     private val data = MutableLiveData<Res>()
     val earthquakes: LiveData<Res> = data
 
     var url: URL? = null
         set(value) {
+            if (field == value) {
+                return
+            }
             field = value
             forceReload()
         }
