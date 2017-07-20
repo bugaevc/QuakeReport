@@ -11,19 +11,15 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
+import kotlin.properties.Delegates
 
 class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) {
     private val data = MutableLiveData<LoadStatus<List<Earthquake>>>()
     val earthquakes: LiveData<LoadStatus<List<Earthquake>>> = data
 
-    var url: URL? = null
-        set(value) {
-            if (field == value) {
-                return
-            }
-            field = value
-            forceReload()
-        }
+    var url by Delegates.observable(initialValue = null as URL?) {
+        _, old, new -> if (old != new) forceReload()
+    }
 
     companion object {
         private val client = OkHttpClient()

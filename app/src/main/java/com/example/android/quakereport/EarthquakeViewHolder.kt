@@ -6,22 +6,20 @@ import android.net.Uri
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import com.example.android.quakereport.databinding.EarthquakeListItemBinding
+import kotlin.properties.Delegates
 
 class EarthquakeViewHolder(private val binding: EarthquakeListItemBinding): RecyclerView.ViewHolder(binding.root) {
 
-    var earthquake: Earthquake? = null
-        set(value) {
-            field = value
-            binding.earthquake = value
-            binding.executePendingBindings()
+    var earthquake by Delegates.observable(initialValue = null as Earthquake?) {
+        _, _, value ->
+        binding.earthquake = value
+        binding.executePendingBindings()
 
-            if (value == null) {
-                return
-            }
-
+        if (value != null) {
             val magnitudeCircle = binding.magnitude.background as GradientDrawable
             magnitudeCircle.setColor(getMagnitudeColor(value.magnitude))
         }
+    }
 
     init {
         binding.root.setOnClickListener {

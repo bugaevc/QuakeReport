@@ -74,17 +74,16 @@ class EarthquakeActivity : AppCompatActivity(),
             binding.swipeRefresh.isRefreshing = it.reloading
             when (it) {
                 is LoadStatus.Failed -> {
+                    adapter.data = emptyList()
                     // TODO: what if it failed for another reason?
                     binding.message = getString(R.string.no_internet_connection)
-                    binding.swipeRefresh.isRefreshing = false
-                    adapter.data = emptyList()
                 }
                 is LoadStatus.Fine -> {
                     adapter.data = it.res
-                    if (it.res.isEmpty()) {
-                        binding.message = getString(R.string.no_earthquakes)
+                    binding.message = if (it.res.isEmpty()) {
+                        getString(R.string.no_earthquakes)
                     } else {
-                        binding.message = null
+                        null
                     }
                 }
             }
@@ -130,7 +129,7 @@ class EarthquakeActivity : AppCompatActivity(),
                 getString(R.string.settings_entry_count_key),
                 getString(R.string.settings_entry_count_default)
         )
-        val uri = Uri.parse(USGS_REQUEST_URL).buildUpon()
+        val uri = Uri.parse("https://earthquake.usgs.gov/fdsnws/event/1/query").buildUpon()
                 .appendQueryParameter("format", "geojson")
                 .appendQueryParameter("limit", entryCount)
                 .appendQueryParameter("minmag", minMagnitude)
@@ -139,7 +138,4 @@ class EarthquakeActivity : AppCompatActivity(),
         return URL(uri)
     }
 
-    companion object {
-        private val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-    }
 }

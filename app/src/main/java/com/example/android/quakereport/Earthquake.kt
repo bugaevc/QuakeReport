@@ -6,20 +6,18 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class Earthquake(
-        var magnitude: Double,
-        var location: String,
-        var timeInMilliseconds: Long,
-        var URL: String
+        val magnitude: Double,
+        val location: String,
+        private val timeInMilliseconds: Long,
+        val URL: String
 ) {
 
-    private fun formatDate(date: Date) = SimpleDateFormat.getDateInstance().format(date)
-    private fun formatTime(date: Date) = SimpleDateFormat.getTimeInstance().format(date)
-    fun formatMagnitude(): String = DecimalFormat("0.0").format(magnitude)
+    private fun formatDate(date: Date) = SimpleDateFormat.getDateInstance().format(date)!!
+    private fun formatTime(date: Date) = SimpleDateFormat.getTimeInstance().format(date)!!
+    fun formatMagnitude() = DecimalFormat("0.0").format(magnitude)!!
 
-    val date: String
-        get() = formatDate(Date(timeInMilliseconds))
-    val time: String
-        get() = formatTime(Date(timeInMilliseconds))
+    val date = formatDate(Date(timeInMilliseconds))
+    val time = formatTime(Date(timeInMilliseconds))
 
     data class Location(val primary: String, val offset: String)
 
