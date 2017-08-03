@@ -1,5 +1,6 @@
 Quake Report App
 ===================================
+[![Build Status](https://travis-ci.org/bugaevc/QuakeReport.svg?branch=master)](https://travis-ci.org/bugaevc/QuakeReport)
 
 The app from the Udacity Beginning Android Nanodegree course (see [README.old](README.old.md)),
 ported to:
