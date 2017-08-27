@@ -22,7 +22,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
-import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -30,7 +29,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import com.example.android.quakereport.databinding.EarthquakeActivityBinding
-import java.net.URL
+import okhttp3.HttpUrl
 
 class EarthquakeActivity : AppCompatActivity(),
         LifecycleRegistryOwner,
@@ -116,7 +115,7 @@ class EarthquakeActivity : AppCompatActivity(),
         viewModel.url = buildURL()
     }
 
-    private fun buildURL(): URL {
+    private fun buildURL(): HttpUrl {
         val minMagnitude = prefs.getString(
                 getString(R.string.settings_min_magnitude_key),
                 getString(R.string.settings_min_magnitude_default)
@@ -129,13 +128,15 @@ class EarthquakeActivity : AppCompatActivity(),
                 getString(R.string.settings_entry_count_key),
                 getString(R.string.settings_entry_count_default)
         )
-        val uri = Uri.parse("https://earthquake.usgs.gov/fdsnws/event/1/query").buildUpon()
-                .appendQueryParameter("format", "geojson")
-                .appendQueryParameter("limit", entryCount)
-                .appendQueryParameter("minmag", minMagnitude)
-                .appendQueryParameter("orderby", orderBy)
-                .build().toString()
-        return URL(uri)
+        return HttpUrl.Builder()
+                .scheme("https")
+                .host("earthquake.usgs.gov")
+                .addPathSegments("fdsnws/event/1/query")
+                .addQueryParameter("format", "geojson")
+                .addQueryParameter("limit", entryCount)
+                .addQueryParameter("minmag", minMagnitude)
+                .addQueryParameter("orderby", orderBy)
+                .build()
     }
 
 }

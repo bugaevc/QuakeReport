@@ -10,14 +10,13 @@ import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.net.URL
 import kotlin.properties.Delegates
 
 class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) {
     private val data = MutableLiveData<LoadStatus<List<Earthquake>>>()
     val earthquakes: LiveData<LoadStatus<List<Earthquake>>> = data
 
-    var url by Delegates.observable(initialValue = null as URL?) {
+    var url by Delegates.observable(initialValue = null as HttpUrl?) {
         _, old, new -> if (old != new) forceReload()
     }
 
@@ -60,9 +59,9 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
     }
 
     private fun extractEarthquakes(json: String): List<Earthquake> {
-        try {
+        return try {
             val arr = JSONObject(json).getJSONArray("features")
-            return (0 until arr.length()).map {
+            (0 until arr.length()).map {
                 val obj = arr.getJSONObject(it).getJSONObject("properties")
                 Earthquake(
                         obj.getDouble("mag"),
@@ -73,7 +72,7 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
             }
         } catch (e: JSONException) {
             e.printStackTrace()
-            return emptyList()
+            emptyList()
         }
     }
 }

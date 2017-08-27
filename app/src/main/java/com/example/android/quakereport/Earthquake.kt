@@ -9,7 +9,7 @@ data class Earthquake(
         val magnitude: Double,
         val location: String,
         private val timeInMilliseconds: Long,
-        val URL: String
+        val url: String
 ) {
 
     private fun formatDate(date: Date) = SimpleDateFormat.getDateInstance().format(date)!!
@@ -23,14 +23,14 @@ data class Earthquake(
 
     fun getFancyLocation(context: Context): Location {
         val LOCATION_SEPARATOR = " of "
-        if (location.contains(LOCATION_SEPARATOR)) {
+        return if (location.contains(LOCATION_SEPARATOR)) {
             val parts = location.split(LOCATION_SEPARATOR)
-            return Location(
+            Location(
                     offset = context.getString(R.string.location_template, parts[0]),
                     primary = parts[1]
             )
         } else {
-            return Location(
+            Location(
                     offset = context.getString(R.string.near_the),
                     primary = location
             )

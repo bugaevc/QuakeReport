@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView
 import com.example.android.quakereport.databinding.EarthquakeListItemBinding
 import kotlin.properties.Delegates
 
-class EarthquakeViewHolder(private val binding: EarthquakeListItemBinding): RecyclerView.ViewHolder(binding.root) {
+class EarthquakeViewHolder(private val binding: EarthquakeListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
     var earthquake by Delegates.observable(initialValue = null as Earthquake?) {
         _, _, value ->
@@ -24,7 +24,7 @@ class EarthquakeViewHolder(private val binding: EarthquakeListItemBinding): Recy
     init {
         binding.root.setOnClickListener {
             earthquake?.apply {
-                val uri = Uri.parse(URL)
+                val uri = Uri.parse(url)
                 val intent = Intent(Intent.ACTION_VIEW, uri)
                 binding.root.context.startActivity(intent)
             }
