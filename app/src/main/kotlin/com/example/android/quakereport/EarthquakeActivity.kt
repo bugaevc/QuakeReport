@@ -64,32 +64,21 @@ class EarthquakeActivity : AppCompatActivity(),
 
         viewModel.earthquakes.observe(this, Observer {
             if (it == null) {
-                binding.message = ""
-                binding.swipeRefresh.isRefreshing = true
-                adapter.data = emptyList()
                 return@Observer
             }
 
-            binding.swipeRefresh.isRefreshing = it.reloading
-            when (it) {
-                is LoadStatus.Failed -> {
-                    adapter.data = emptyList()
-                    // TODO: what if it failed for another reason?
-                    binding.message = getString(R.string.no_internet_connection)
-                }
-                is LoadStatus.Fine -> {
-                    adapter.data = it.res
-                    binding.message = if (it.res.isEmpty()) {
-                        getString(R.string.no_earthquakes)
-                    } else {
-                        null
-                    }
-                }
+            binding.swipeRefresh.isRefreshing = it.loading
+            binding.message = when {
+                // TODO: what if it failed for another reason?
+                it.failed -> getString(R.string.no_internet_connection)
+                it.res == null || it.res.isEmpty() -> getString(R.string.no_earthquakes)
+                else -> null
             }
+            adapter.data = it.res ?: emptyList()
         })
 
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.forceReload()
+            viewModel.reload()
         }
     }
 

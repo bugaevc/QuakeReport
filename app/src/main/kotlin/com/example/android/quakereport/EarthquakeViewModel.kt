@@ -17,43 +17,30 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
     val earthquakes: LiveData<LoadStatus<List<Earthquake>>> = data
 
     var url by Delegates.observable(initialValue = null as HttpUrl?) {
-        _, old, new -> if (old != new) forceReload()
+        _, old, new -> if (old != new) reload()
     }
 
     companion object {
         private val client = OkHttpClient()
     }
 
-    fun forceReload() {
-        val url = this.url
-        if (url == null) {
-            data.value = null
-            return
-        }
-        val connMgr = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connMgr.activeNetworkInfo
-
-        if (networkInfo == null || !networkInfo.isConnected) {
-            data.value = LoadStatus.Failed(reloading = false)
+    fun reload() {
+        if (connMgr.activeNetworkInfo?.isConnected != true) {
+            data.value = LoadStatus(failed = true)
             return
         }
 
-        val curValue = data.value
-        data.value = when (curValue) {
-            null -> LoadStatus.Fine(emptyList(), reloading = true)
-            is LoadStatus.Fine -> LoadStatus.Fine(curValue.res, reloading = true)
-            is LoadStatus.Failed -> LoadStatus.Failed(reloading = true)
-        }
+        data.value = data.value?.copy(loading = true) ?: LoadStatus(loading = true)
 
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object : Callback {
             // this runs on a different thread, so we must use postValue()
             override fun onFailure(call: Call, e: IOException) = data.postValue(
-                    LoadStatus.Failed(reloading = false)
+                    LoadStatus(failed = true)
             )
             override fun onResponse(call: Call, response: Response) {
                 val res = extractEarthquakes(response.body()!!.string())
-                data.postValue(LoadStatus.Fine(res, reloading = false))
+                data.postValue(LoadStatus(res))
             }
         })
     }
@@ -74,5 +61,9 @@ class EarthquakeViewModel(private val app: Application) : AndroidViewModel(app) 
             e.printStackTrace()
             emptyList()
         }
+    }
+
+    private val connMgr by lazy {
+        app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 }
